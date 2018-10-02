@@ -38,7 +38,7 @@
     anchorTag.addEventListener('click', (e) => {
       e.preventDefault()
       const authenticator = new netlify.default({})
-      authenticator.authenticate({ provider: "github", scope: "user" }, (err, data) => {
+      authenticator.authenticate({ provider: "github", scope: "user:email" }, (err, data) => {
         // eslint-disable-next-line
         debugger;
         err ? outputText.innerText = "Error Authenticating with GitHub: " + err :
