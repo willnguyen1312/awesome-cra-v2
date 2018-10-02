@@ -1,26 +1,41 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+function sleep(miliseconds) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, miliseconds);
+  })
+}
 
 class App extends Component {
+  logs = [1, [2, 3, 4], 5]
+  state = {
+    current: 0
+  }
+
+  componentDidMount() {
+    this.readLogs(this.logs);
+  }
+
+  readLogs = async (logs) => {
+    for (const log of logs) {
+      if (typeof log === "object") {
+        await this.readLogs(log)
+      } else {
+        await sleep(1000)
+        this.setState(() => ({
+          current: log,
+        }))
+      }
+    }
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <h1>
+        {this.state.current}
+      </h1>
     );
   }
 }
