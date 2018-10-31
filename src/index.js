@@ -8,7 +8,7 @@ ReactDOM.render(<App />, document.getElementById('root'));
 
 if (process.env.NODE_ENV !== 'production') {
     const { whyDidYouUpdate } = require('why-did-you-update');
-    whyDidYouUpdate(React);
+    // whyDidYouUpdate(React);
     module.hot.accept()
 }
 
