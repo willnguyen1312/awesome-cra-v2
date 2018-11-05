@@ -2,54 +2,50 @@ import * as React from 'react'
 import axios from 'axios'
 
 
-const CancelToken = axios.CancelToken;
-const source = CancelToken.source();
-
-
-
+let num = 1
+let call = 1
 
 export default class App extends React.Component {
     state = {
         data: 0,
     }
 
-    handleClick = async () => {
-        // setTimeout(() => {
-        //     this.props.history.push('/about')
-        // }, 1000);
-        // const { name } = await fetch('https://jsonplaceholder.typicode.com/users/1')
-        //     .then(r => r.json())
-
-        try {
-
+    componentDidMount() {
+        const CancelToken = axios.CancelToken;
+        const source = CancelToken.source();
+        this.source = source
+        if (num < 4) {
+            num++
             setTimeout(() => {
                 this.props.history.push('/about')
-            }, 1000);
-            const { data: { name } } = await axios.get('https://jsonplaceholder.typicode.com/users/1', {
-                cancelToken: source.token
-            })
+            }, 200);
+        }
+        debugger;
 
+        axios.get(`https://jsonplaceholder.typicode.com/users/${call++}`, {
+            cancelToken: source.token
+        }).then(({ data: { name } }) => {
             this.setState({
                 data: name
             })
-        } catch (error) {
-            if (axios.isCancel(error)) {
-                console.log('Request canceled', error);
+        }).catch(function (thrown) {
+            if (axios.isCancel(thrown)) {
+                console.log('Request canceled', thrown.message);
             } else {
-                console.log('Normal error ', error);
+                console.log("Unknow ", thrown)
             }
-        }
+        });
     }
 
     componentWillUnmount() {
         // cancel the request (the message parameter is optional)
-        source.cancel();
+        this.source.cancel();
     }
 
     render() {
         return <div>
             {this.state.data}
-            <button onClick={this.handleClick}>Load Data</button>
+            {/* <button onClick={this.handleClick}>Load Data</button> */}
         </div>
     }
 }
