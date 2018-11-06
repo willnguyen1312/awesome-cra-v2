@@ -1,5 +1,5 @@
 import * as React from 'react'
-import axios from 'axios'
+import { signal, controller } from './abort';
 
 
 let num = 1
@@ -10,41 +10,38 @@ export default class App extends React.Component {
         data: 0,
     }
 
-    componentDidMount() {
-        const CancelToken = axios.CancelToken;
-        const source = CancelToken.source();
-        this.source = source
+    componentDidMount = async () => {
         if (num < 4) {
             num++
             setTimeout(() => {
                 this.props.history.push('/about')
             }, 200);
         }
-        debugger;
+        const controller = new AbortController();
+        this.controller = controller;
+        const signal = controller.signal;
 
-        axios.get(`https://jsonplaceholder.typicode.com/users/${call++}`, {
-            cancelToken: source.token
-        }).then(({ data: { name } }) => {
+        try {
+            const data = await fetch(`https://jsonplaceholder.typicode.com/users/${call++}`, {
+                signal,
+            }).then(r => r.json())
             this.setState({
-                data: name
+                data,
             })
-        }).catch(function (thrown) {
-            if (axios.isCancel(thrown)) {
-                console.log('Request canceled', thrown.message);
-            } else {
-                console.log("Unknow ", thrown)
-            }
-        });
+        } catch (e) {
+            console.log(e)
+        }
+
     }
 
     componentWillUnmount() {
-        // cancel the request (the message parameter is optional)
-        this.source.cancel();
+        this.controller.abort()
     }
 
     render() {
+        console.log(this.state);
         return <div>
-            {this.state.data}
+            {this.state.data.name}
             {/* <button onClick={this.handleClick}>Load Data</button> */}
         </div>
     }

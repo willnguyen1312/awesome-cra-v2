@@ -1,19 +1,35 @@
-import * as React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import Voila from './Voila'
-import Distract from './Distract'
+import * as React from "react";
+import styled from 'styled-components'
+
+const Wrapper = styled.div`
+  display: flex;
+`
 
 export default class App extends React.Component {
+  state = {
+    lang: "en"
+  };
+  componentDidMount() {
+    this.loadContent();
+  }
+
+  loadContent = async () => {
+    const { lang } = this.state;
+    const { default: data } = await import(`./lang/${lang}`);
+    console.log(data);
+  };
+
+  handleClick = () => {
+    this.setState(() => ({
+      lang: this.state.lang === "en" ? "jp" : "en"
+    }), this.loadContent);
+  };
   render() {
     return (
-      <div>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path="/" component={Voila} />
-            <Route path="/about" component={Distract} />
-          </Switch>
-        </BrowserRouter>
-      </div>
-    )
+      <Wrapper>
+        <h1>Hello</h1>
+        <button onClick={this.handleClick}>Load lang</button>
+      </Wrapper>
+    );
   }
 }
